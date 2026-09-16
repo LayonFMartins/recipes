@@ -11,8 +11,21 @@ use App\Http\Resources\RecipeResource;
 
 class RecipeController extends Controller
 {
-    public function index(){
-        return RecipeResource::collection(Recipe::all());
+    public function index(Request $request){
+        return RecipeResource::collection(
+            Recipe::when(
+                $request->query("search"), 
+                function($query, $search){
+                    $query->where(
+                        "name",
+                         "like",
+                          "%$search%"
+                    );
+                }
+            )
+            ->orderBy("created_at","desc")
+            ->paginate(10)
+        );
     }
 
     public function store(StoreRecipeRequest $request){
