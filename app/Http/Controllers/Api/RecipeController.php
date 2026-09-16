@@ -16,11 +16,9 @@ class RecipeController extends Controller
     }
 
     public function store(StoreRecipeRequest $request){
-        $recipe = Recipe::create($request->validated());
+        $recipe = $request->user()->recipes()->create($request->validated());
 
-        return (new RecipeResource($recipe))
-            ->response()
-            ->setStatusCode(201);
+        return new RecipeResource($recipe);
     }
 
     public function show(Recipe $recipe){
@@ -28,11 +26,14 @@ class RecipeController extends Controller
     }
 
     public function update(UpdateRecipeRequest $request, Recipe $recipe){
+
+        $this->authorize("update", $recipe);
         $recipe->update($request->validated());
         return new RecipeResource($recipe);
     }
 
     public function destroy(Recipe $recipe){
+        $this->authorize("delete", $recipe);
         $recipe->delete();
         return response()->noContent();
     }
