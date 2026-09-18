@@ -20,13 +20,13 @@ class RecipeTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')->getJson('/api/recipes');
+        $response = $this->actingAs($user, "sanctum")->getJson("/api/recipes");
         $response->assertStatus(200);
     }
 
     public function test_unauthenticated_user_cannot_list_recipes(): void
     {
-        $response = $this->getJson('/api/recipes');
+        $response = $this->getJson("/api/recipes");
 
         $response->assertStatus(401);
     }
@@ -36,10 +36,10 @@ class RecipeTest extends TestCase
         $user = User::factory()->create();
 
         $recipe = Recipe::factory()->create([
-            'user_id' => $user->id,
+            "user_id" => $user->id,
         ]);
 
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($user, "sanctum")
             ->getJson("/api/recipes/{$recipe->id}");
 
         $response->assertStatus(200);
@@ -49,8 +49,8 @@ class RecipeTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')
-            ->getJson('/api/recipes/99999');
+        $response = $this->actingAs($user, "sanctum")
+            ->getJson("/api/recipes/99999");
 
         $response->assertStatus(404);
     }
@@ -59,18 +59,18 @@ class RecipeTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/recipes', [
-                'name' => 'Lasanha',
-                'description' => 'Lasanha de carne com molho branco',
+        $response = $this->actingAs($user, "sanctum")
+            ->postJson("/api/recipes", [
+                "name" => "Lasanha",
+                "description" => "Lasanha de carne com molho branco",
             ]);
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('recipes', [
-            'name' => 'Lasanha',
-            'description' => 'Lasanha de carne com molho branco',
-            'user_id' => $user->id,
+        $this->assertDatabaseHas("recipes", [
+            "name" => "Lasanha",
+            "description" => "Lasanha de carne com molho branco",
+            "user_id" => $user->id,
         ]);
     }
 
@@ -78,14 +78,14 @@ class RecipeTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/recipes', []);
+        $response = $this->actingAs($user, "sanctum")
+            ->postJson("/api/recipes", []);
 
         $response->assertStatus(422);
 
         $response->assertJsonValidationErrors([
-            'name',
-            'description',
+            "name",
+            "description",
         ]);
     }
 
@@ -95,20 +95,20 @@ class RecipeTest extends TestCase
         $otherUser = User::factory()->create();
 
         $recipe = Recipe::factory()->create([
-            'user_id' => $owner->id,
+            "user_id" => $owner->id,
         ]);
 
-        $response = $this->actingAs($otherUser, 'sanctum')
+        $response = $this->actingAs($otherUser, "sanctum")
             ->putJson("/api/recipes/{$recipe->id}", [
-                'name' => 'Receita alterada',
-                'description' => 'Tentativa de alteração',
+                "name" => "Receita alterada",
+                "description" => "Tentativa de alteração",
             ]);
 
         $response->assertStatus(403);
 
-        $this->assertDatabaseHas('recipes', [
-            'id' => $recipe->id,
-            'name' => $recipe->name,
+        $this->assertDatabaseHas("recipes", [
+            "id" => $recipe->id,
+            "name" => $recipe->name,
         ]);
     }
     public function test_user_can_update_own_recipe(): void
@@ -116,22 +116,22 @@ class RecipeTest extends TestCase
         $user = User::factory()->create();
 
         $recipe = Recipe::factory()->create([
-            'user_id' => $user->id,
+            "user_id" => $user->id,
         ]);
 
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($user, "sanctum")
             ->putJson("/api/recipes/{$recipe->id}", [
-                'name' => 'Lasanha atualizada',
-                'description' => 'Nova descrição',
+                "name" => "Lasanha atualizada",
+                "description" => "Nova descrição",
             ]);
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('recipes', [
-            'id' => $recipe->id,
-            'name' => 'Lasanha atualizada',
-            'description' => 'Nova descrição',
-            'user_id' => $user->id,
+        $this->assertDatabaseHas("recipes", [
+            "id" => $recipe->id,
+            "name" => "Lasanha atualizada",
+            "description" => "Nova descrição",
+            "user_id" => $user->id,
         ]);
     }
 
@@ -140,16 +140,16 @@ class RecipeTest extends TestCase
         $user = User::factory()->create();
 
         $recipe = Recipe::factory()->create([
-            'user_id' => $user->id,
+            "user_id" => $user->id,
         ]);
 
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($user, "sanctum")
             ->deleteJson("/api/recipes/{$recipe->id}");
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('recipes', [
-            'id' => $recipe->id,
+        $this->assertDatabaseMissing("recipes", [
+            "id" => $recipe->id,
         ]);
     }
 
@@ -159,16 +159,16 @@ class RecipeTest extends TestCase
         $otherUser = User::factory()->create();
 
         $recipe = Recipe::factory()->create([
-            'user_id' => $owner->id,
+            "user_id" => $owner->id,
         ]);
 
-        $response = $this->actingAs($otherUser, 'sanctum')
+        $response = $this->actingAs($otherUser, "sanctum")
             ->deleteJson("/api/recipes/{$recipe->id}");
 
         $response->assertStatus(403);
 
-        $this->assertDatabaseHas('recipes', [
-            'id' => $recipe->id,
+        $this->assertDatabaseHas("recipes", [
+            "id" => $recipe->id,
         ]);
     }
 }
