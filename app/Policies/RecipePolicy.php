@@ -37,7 +37,7 @@ class RecipePolicy
      */
     public function update(User $user, Recipe $recipe): bool
     {
-        return $user->id === $recipe->user_id;
+        return $this->isOwnerOrAdmin($user, $recipe);
     }
 
     /**
@@ -45,7 +45,7 @@ class RecipePolicy
      */
     public function delete(User $user, Recipe $recipe): bool
     {
-        return $user->id === $recipe->user_id;
+        return $this->isOwnerOrAdmin($user, $recipe);
     }
 
     /**
@@ -62,5 +62,9 @@ class RecipePolicy
     public function forceDelete(User $user, Recipe $recipe): bool
     {
         return false;
+    }
+
+    private function isOwnerOrAdmin(User $user, Recipe $recipe): bool {
+        return $user->isAdmin() || $user->id ===$recipe->user_id;
     }
 }

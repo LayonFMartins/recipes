@@ -288,4 +288,51 @@ class RecipeTest extends TestCase
             "id" => $recipe->id,
         ]);
     }
+
+    public function test_admin_can_update_another_users_recipe(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $owner = User::factory()->create();
+
+        $recipe = Recipe::factory()->create([
+            "user_id" => $owner->id,
+        ]);
+
+        $response = $this->actingAs($admin, "sanctum")
+            ->putJson("/api/recipes/{$recipe->id}", [
+                "name" => "Receita atualizada pelo admin",
+                "description" => "Descrição atualizada pelo admin",
+            ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas("recipes", [
+            "id" => $recipe->id,
+            "name" => "Receita atualizada pelo admin",
+            "description" => "Descrição atualizada pelo admin",
+            "user_id" => $owner->id,
+        ]);
+    }
+
+    public function test_admin_can_delete_another_users_recipe(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $owner = User::factory()->create();
+
+        $recipe = Recipe::factory()->create([
+            "user_id" => $owner->id,
+        ]);
+
+        $response = $this->actingAs($admin, "sanctum")
+            ->deleteJson("/api/recipes/{$recipe->id}");
+
+        $response->assertStatus(204);
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing("recipes", [
+            "id" => $recipe->id,
+        ]);
+    }
 }
