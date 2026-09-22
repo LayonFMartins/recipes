@@ -335,4 +335,17 @@ class RecipeTest extends TestCase
             "id" => $recipe->id,
         ]);
     }
+
+    public function test_user_can_check_if_they_can_update_their_own_recipe(): void
+    {
+        $user = User::factory()->create();
+
+        $recipe = Recipe::factory()->create([
+            "user_id" => $user->id,
+        ]);
+
+        $this->assertTrue(
+            $user->can("update", $recipe)
+        );
+    }
 }

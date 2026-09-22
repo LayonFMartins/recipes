@@ -13,4 +13,10 @@ Route::middleware("auth:sanctum")->group(function(){
     Route::get("/recipes/{recipe}", [RecipeController::class, "show"]);
     Route::put("/recipes/{recipe}", [RecipeController::class, "update"]);
     Route::delete("/recipes/{recipe}", [RecipeController::class, "destroy"]);
+
+    Route::get("/admin/test", function () {
+        return response()->json([
+            "message" => "Área administrativa",
+        ]);
+    })->middleware("can:access-admin-area");
 });
